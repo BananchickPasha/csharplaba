@@ -5,29 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfLaba2"
         mc:Ignorable="d"
-        Title="Знайти вік та знаки зодіаку" Height="200" Width="400">
+        Title="Person Info" Height="350" Width="525">
     <Window.DataContext>
-        <local:MainViewModel />
+        <local:MainViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <Label Grid.Row="0" Grid.Column="0" Content="Дата народження:" />
-        <DatePicker Grid.Row="0" Grid.Column="1" SelectedDate="{Binding DateOfBirth}" />
-
-        <Button Grid.Row="1" Grid.Column="1" Content="Обчислити" Command="{Binding CalculateAgeAndZodiacCommand}" />
-
-        <Label Grid.Row="2" Grid.Column="0" />
-        <Label Grid.Row="3" Grid.Column="0" Content="Знаки зодіаку:" />
-        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ZodiacSigns}" />
+        <TextBlock Grid.Row="0" Margin="10" Text="First Name:"/>
+        <TextBox Grid.Row="0" Margin="10" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsProcessing}"/>
+        <TextBlock Grid.Row="1" Margin="10" Text="Last Name:"/>
+        <TextBox Grid.Row="1" Margin="10" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsProcessing}"/>
+        <TextBlock Grid.Row="2" Margin="10" Text="Email Address:"/>
+        <TextBox Grid.Row="2" Margin="10" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsProcessing}"/>
+        <TextBlock Grid.Row="3" Margin="10" Text="DateOfBirth:"/>
+        <DatePicker Grid.Row="3" Margin="10" SelectedDate="{Binding DateOfBirth, UpdateSourceTrigger=PropertyChanged}"/>
+        <Button Grid.Row="4" Margin="10" Content="Proceed" Command="{Binding ProceedCommand}" IsEnabled="{Binding CanProceed}"/>
+        <ProgressBar Grid.Row="5" Margin="10" Height="20" IsIndeterminate="{Binding IsProcessing}"/>
+        <TextBlock Grid.Row="6" Margin="10" Text="{Binding IsAdultMessage}"/>
+        <TextBlock Grid.Row="7" Margin="10" Text="{Binding SunSignMessage}"/>
+        <TextBlock Grid.Row="8" Margin="10" Text="{Binding ChineseSignMessage}"/>
     </Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -8,8 +9,6 @@ namespace WpfLaba2
     public class MainViewModel : INotifyPropertyChanged
     {
         private DateTime _dateOfBirth;
-        private string _age;
-        private string _zodiacSigns;
 
         public DateTime DateOfBirth
         {
@@ -17,121 +16,151 @@ namespace WpfLaba2
             set
             {
                 _dateOfBirth = value;
-                OnPropertyChanged("DateOfBirth");
+                OnPropertyChanged(nameof(DateOfBirth));
+                CheckCanProceed();
             }
         }
 
-        public string Age
+        private string _firstName;
+
+        public string FirstName
         {
-            get { return _age; }
+            get { return _firstName; }
             set
             {
-                _age = value;
-                OnPropertyChanged("Age");
+                _firstName = value;
+                OnPropertyChanged(nameof(FirstName));
+                CheckCanProceed();
             }
         }
 
-        public string ZodiacSigns
+        private string _lastName;
+
+        public string LastName
         {
-            get { return _zodiacSigns; }
+            get { return _lastName; }
             set
             {
-                _zodiacSigns = value;
-                OnPropertyChanged("ZodiacSigns");
+                _lastName = value;
+                OnPropertyChanged(nameof(LastName));
+                CheckCanProceed();
             }
         }
 
-        public ICommand CalculateAgeAndZodiacCommand { get; private set; }
+        private string _email;
+
+        public string Email
+        {
+            get { return _email; }
+            set
+            {
+                _email = value;
+                OnPropertyChanged(nameof(Email));
+                CheckCanProceed();
+            }
+        }
+
+        private bool _canProceed;
+
+        public bool CanProceed
+        {
+            get { return _canProceed; }
+            set
+            {
+                _canProceed = value;
+                OnPropertyChanged(nameof(CanProceed));
+            }
+        }
+
+        private bool _isProcessing;
+
+        public bool IsProcessing
+        {
+            get { return _isProcessing; }
+            set
+            {
+                _isProcessing = value;
+                OnPropertyChanged(nameof(IsProcessing));
+            }
+        }
+
+        private string _isAdultMessage;
+
+        public string IsAdultMessage
+        {
+            get { return _isAdultMessage; }
+            set
+            {
+                _isAdultMessage = value;
+                OnPropertyChanged(nameof(IsAdultMessage));
+            }
+        }
+
+        private string _sunSignMessage;
+
+        public string SunSignMessage
+        {
+            get { return _sunSignMessage; }
+            set
+            {
+                _sunSignMessage = value;
+                OnPropertyChanged(nameof(SunSignMessage));
+            }
+        }
+
+        private string _chineseSignMessage;
+
+        public string ChineseSignMessage
+        {
+            get { return _chineseSignMessage; }
+            set
+            {
+                _chineseSignMessage = value;
+                OnPropertyChanged(nameof(ChineseSignMessage));
+            }
+        }
+        
+        private void CheckCanProceed()
+        {
+            CanProceed = !IsProcessing && 
+                !string.IsNullOrEmpty(FirstName) &&
+                !string.IsNullOrEmpty(LastName) &&
+                !string.IsNullOrEmpty(Email) &&
+                DateOfBirth != default(DateTime);
+        }
+
+        public ICommand ProceedCommand { get; }
 
         public MainViewModel()
         {
             DateOfBirth = DateTime.Now;
-            CalculateAgeAndZodiacCommand = new RelayCommand(CalculateAgeAndZodiac);
+            ProceedCommand = new RelayCommand(Proceed);
         }
 
-        private void CalculateAgeAndZodiac()
+        private void Proceed()
         {
-            int age = CalculateAge(DateOfBirth);
-            if (age < 0 || age > 135)
+            IsProcessing = true;
+            var t = Task.Run(async () =>
             {
-                MessageBox.Show("Введіть коректну дату народження!", "Помилка", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                return;
-            }
+                await Task.Delay(10000);
+                var person = new Person(FirstName, LastName, Email, DateOfBirth);
+                if (!person.IsAdult)
+                {
+                    MessageBox.Show("Введіть коректну дату народження!", "Помилка", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
 
-            Age = age.ToString();
+                if (person.IsBirthday)
+                {
+                    MessageBox.Show("Вітаємо з днем народження!", "Приємно", MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
 
-            if (DateTime.Today.Day == DateOfBirth.Day && DateTime.Today.Month == DateOfBirth.Month)
-            {
-                MessageBox.Show("Вітаємо з днем народження!", "Приємно", MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-            }
-
-            ZodiacSigns = $"{CalculateWesternZodiacSign(DateOfBirth)} | {CalculateChineseZodiacSign(DateOfBirth)}";
-        }
-
-        private string CalculateWesternZodiacSign(DateTime dateOfBirth)
-        {
-            var month = dateOfBirth.Month;
-            var day = dateOfBirth.Day;
-            return month switch
-            {
-                3 when day >= 21 => "Овен",
-                4 when day <= 19 => "Овен",
-                4 when day >= 20 => "Телець",
-                5 when day <= 20 => "Телець",
-                5 when day >= 21 => "Близнюки",
-                6 when day <= 20 => "Близнюки",
-                6 when day >= 21 => "Рак",
-                7 when day <= 22 => "Рак",
-                7 when day >= 23 => "Лев",
-                8 when day <= 22 => "Лев",
-                8 when day >= 23 => "Діва",
-                9 when day <= 22 => "Діва",
-                9 when day >= 23 => "Терези",
-                10 when day <= 22 => "Терези",
-                10 when day >= 23 => "Скорпіон",
-                11 when day <= 21 => "Скорпіон",
-                11 when day >= 22 => "Стрілець",
-                12 when day <= 21 => "Стрілець",
-                12 when day >= 22 => "Козоріг",
-                1 when day <= 19 => "Козоріг",
-                1 when day >= 20 => "Водолій",
-                2 when day <= 18 => "Водолій",
-                2 when day >= 19 => "Риби",
-                3 when day <= 20 => "Риби",
-                _ => "Невідомо"
-            };
-        }
-
-        private string CalculateChineseZodiacSign(DateTime dateOfBirth) =>
-            ((dateOfBirth.Year - 4) % 12) switch
-            {
-                0 => "Щур",
-                1 => "Бик",
-                2 => "Тигр",
-                3 => "Кролик",
-                4 => "Дракон",
-                5 => "Змія",
-                6 => "Кінь",
-                7 => "Коза",
-                8 => "Мавпа",
-                9 => "Півень",
-                10 => "Собака",
-                11 => "Свиня",
-                _ => "Невідомо"
-            };
-
-        private int CalculateAge(DateTime dateOfBirth)
-        {
-            int age = DateTime.Now.Year - dateOfBirth.Year;
-            if (DateTime.Now.Month < dateOfBirth.Month ||
-                (DateTime.Now.Month == dateOfBirth.Month && DateTime.Now.Day < dateOfBirth.Day))
-            {
-                age--;
-            }
-
-            return age;
+                ChineseSignMessage = person.ChineseSign;
+                IsAdultMessage = person.IsAdult ? "Дорослий" : "";
+                SunSignMessage = person.SunSign;
+            }).ContinueWith(t => IsProcessing = false);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
