@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace WpfLaba2
@@ -27,7 +28,26 @@ namespace WpfLaba2
             _chineseSign = CalculateChineseSign();
 
             _isBirthday = DateTime.Today.Day == DateOfBirth.Day && DateTime.Today.Month == DateOfBirth.Month;
-            _isAdult = _age is >= 18 and <= 135;
+            _isAdult = _age is >= 18;
+
+            if (_age < 0)
+                throw new TooYoungException();
+            if (_age > 135)
+                throw new TooOldException();
+            if (!IsValidEmail(email))
+                throw new NotFancyEnoughEmailException();
+        }
+
+        public static bool IsValidEmail(string email)
+        {
+            // regular expression pattern for validating email addresses
+            string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+            // use regex to check if the email matches the pattern
+            var match = Regex.Match(email, pattern);
+
+            // return true if the email is valid, false otherwise
+            return match.Success;
         }
 
         public Person(string firstName, string lastName, string email)
@@ -97,7 +117,7 @@ namespace WpfLaba2
                 11 => "Свиня",
                 _ => "Невідомо"
             };
-        
+
         private int CalculateAge()
         {
             int age = DateTime.Now.Year - DateOfBirth.Year;

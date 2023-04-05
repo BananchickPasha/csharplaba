@@ -143,23 +143,37 @@ namespace WpfLaba2
             var t = Task.Run(async () =>
             {
                 await Task.Delay(10000);
-                var person = new Person(FirstName, LastName, Email, DateOfBirth);
-                if (!person.IsAdult)
+                try
                 {
-                    MessageBox.Show("Введіть коректну дату народження!", "Помилка", MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
 
-                if (person.IsBirthday)
+                    var person = new Person(FirstName, LastName, Email, DateOfBirth);
+                    if (person.IsBirthday)
+                    {
+                        MessageBox.Show("Вітаємо з днем народження!", "Приємно", MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+                    }
+                    ChineseSignMessage = person.ChineseSign;
+                    IsAdultMessage = person.IsAdult ? "Дорослий" : "";
+                    SunSignMessage = person.SunSign;
+                }
+                catch (NotFancyEnoughEmailException)
                 {
-                    MessageBox.Show("Вітаємо з днем народження!", "Приємно", MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        MessageBox.Show("Введіть коректну poshtu!", "Помилка", MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return;
                 }
-
-                ChineseSignMessage = person.ChineseSign;
-                IsAdultMessage = person.IsAdult ? "Дорослий" : "";
-                SunSignMessage = person.SunSign;
+                catch (TooOldException e)
+                {
+                        MessageBox.Show("Введіть коректну дату народження!", "Помилка", MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return;
+                }
+                catch (TooYoungException e)
+                {
+                        MessageBox.Show("Введіть коректну дату народження!", "Помилка", MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return;
+                }
             }).ContinueWith(t => IsProcessing = false);
         }
 
